@@ -1,5 +1,13 @@
-import Image from "next/image";
-
 export default function Home() {
-  return <div>Hello World</div>;
+  return (
+    <div>
+      <div className="flex items-center justify-center">
+        <ul>
+          <li>carousel</li>
+          <li>Why Us</li>
+          <li>featured</li>
+        </ul>
+      </div>
+    </div>
+  );
 }
