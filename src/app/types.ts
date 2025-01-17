@@ -7,8 +7,11 @@ export type Product = {
   originalPackage: boolean;
   notes: string;
   category: string;
+  subCategory: string;
+  blurb: string;
   cost: number;
   price: number;
+  promotionPrice: number;
   stock: number;
   itemNumber: string;
   upc: string;

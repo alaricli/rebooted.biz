@@ -21,21 +21,30 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Top Navigation Links */}
-          <ul className="flex text-sm space-x-6">
-            <li>
-              <Link
-                href="/"
-                className="border p-2 rounded-lg border-gray-900  hover:scale-105 transition-transform"
-              >
-                Trade-In
-              </Link>
-            </li>
-            <li>
-              <Link href="/help" className="hover:underline">
-                Help
-              </Link>
-            </li>
-          </ul>
+          <ul className="flex text-sm space-x-6"></ul>
+          <div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border rounded py-1 px-4 pr-10 w-64"
+              />
+              <button className="absolute right-0 top-0 mt-1 mr-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-500"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </nav>
       {/* bottom bar */}
@@ -44,7 +53,10 @@ const Navbar: React.FC = () => {
           <ul className="flex space-x-8 text-base">
             <li>
               <Link
-                href="/components"
+                href={{
+                  pathname: "/products",
+                  query: { category: "component" },
+                }}
                 className="hover:underline hover:text-blue-500"
               >
                 PC Components
@@ -52,7 +64,10 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <Link
-                href="/systems"
+                href={{
+                  pathname: "/products",
+                  query: { category: "system" },
+                }}
                 className="hover:underline hover:text-blue-500"
               >
                 Systems
@@ -60,7 +75,10 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <Link
-                href="/accessories"
+                href={{
+                  pathname: "/products",
+                  query: { category: "accessory" },
+                }}
                 className="hover:underline hover:text-blue-500"
               >
                 Accessories
