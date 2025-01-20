@@ -21,6 +21,7 @@ const ProductsPage = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "all";
   const [products, setProducts] = useState<Product[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadProducts() {
@@ -28,7 +29,8 @@ const ProductsPage = () => {
         const products = await fetchProducts(category);
         setProducts(products);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.log("Error fetching products:", error);
+        setError("Failed to fetch products");
       }
     }
     loadProducts();
@@ -40,7 +42,7 @@ const ProductsPage = () => {
         return "PC Components";
       case "system":
         return "Desktops & Laptops";
-      case "component":
+      case "accessory":
         return "Accessories";
       default:
         return "All Products";
@@ -73,6 +75,11 @@ const ProductsPage = () => {
             </Link>
           </div>
         ))}
+        {error && (
+          <div>
+            <p>{error}</p>
+          </div>
+        )}
       </div>
     </div>
   );
