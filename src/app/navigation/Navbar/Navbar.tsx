@@ -1,3 +1,4 @@
+import CartButton from "@/app/components/CartButton";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,7 +7,7 @@ const Navbar: React.FC = () => {
     <div>
       {/* top bar */}
       <nav className="bg-gray-50 border-b border-gray-200 py-2">
-        <div className="container mx-auto flex items-center">
+        <div className="container mx-auto flex items-center justify-between">
           {/* Logo */}
           <div className="text-xl font-bold">
             <Link href="/">
@@ -44,6 +45,9 @@ const Navbar: React.FC = () => {
                 </svg>
               </button>
             </div>
+          </div>
+          <div>
+            <CartButton />
           </div>
         </div>
       </nav>
