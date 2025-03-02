@@ -5,11 +5,12 @@ import { Product } from "@/app/types";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import AddToCartButton from "@/app/components/AddToCartButton";
+import { formatCurrency } from "@/app/utility/formatCurrency";
 
-async function fetchProduct(productId: string): Promise<Product | null> {
+async function fetchProduct(sku: string): Promise<Product | null> {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/get/product/${productId}`
+      `http://localhost:8080/api/public/get/products/sku/${sku}`
     );
     const data = await response.json();
     return data;
@@ -20,21 +21,21 @@ async function fetchProduct(productId: string): Promise<Product | null> {
 }
 
 const ProductPage = () => {
-  const { id } = useParams();
+  const { sku } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    if (!id) {
+    if (!sku) {
       return;
     }
 
     async function loadProductData() {
-      const productData = await fetchProduct(id as string);
+      const productData = await fetchProduct(sku as string);
       setProduct(productData);
     }
 
     loadProductData();
-  }, [id]);
+  }, [sku]);
 
   if (!product) {
     return <div></div>;
@@ -45,7 +46,7 @@ const ProductPage = () => {
       <div className="">
         <div>
           <Image
-            src={product.productImage}
+            src={product.mainImage}
             width={300}
             height={300}
             alt={product.name}
@@ -54,7 +55,7 @@ const ProductPage = () => {
         <div>
           <h1>{product.name}</h1>
           <p>{product.description}</p>
-          <p>Price: ${product.price}</p>
+          <p>{formatCurrency(product.unitAmount)}</p>
         </div>
         <div>
           <AddToCartButton onClick={() => alert("Add to cart")} />

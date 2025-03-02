@@ -47,6 +47,11 @@ const Navbar: React.FC = () => {
             </div>
           </div>
           <div>
+            <button className="hover:underline">
+              <Link href="/account">Account</Link>
+            </button>
+          </div>
+          <div>
             <CartButton />
           </div>
         </div>
@@ -59,7 +64,7 @@ const Navbar: React.FC = () => {
               <Link
                 href={{
                   pathname: "/products",
-                  query: { category: "component" },
+                  query: { category: "components" },
                 }}
                 className="hover:underline hover:text-blue-500"
               >
@@ -70,7 +75,7 @@ const Navbar: React.FC = () => {
               <Link
                 href={{
                   pathname: "/products",
-                  query: { category: "system" },
+                  query: { category: "systems" },
                 }}
                 className="hover:underline hover:text-blue-500"
               >
@@ -81,7 +86,7 @@ const Navbar: React.FC = () => {
               <Link
                 href={{
                   pathname: "/products",
-                  query: { category: "accessory" },
+                  query: { category: "accessories" },
                 }}
                 className="hover:underline hover:text-blue-500"
               >
