@@ -1,18 +1,45 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart, Loader2 } from "lucide-react";
 
 interface AddToCartButtonProps {
   onClick: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  size?: "default" | "sm" | "lg";
+  sku?: string;
+  quantity?: number;
 }
 
-const AddToCartButton: React.FC<AddToCartButtonProps> = ({ onClick }) => {
+const AddToCartButton: React.FC<AddToCartButtonProps> = ({
+  onClick,
+  isLoading = false,
+  disabled = false,
+  fullWidth = true,
+  size = "lg",
+  sku,
+  quantity,
+}) => {
   return (
-    <button
+    <Button
       onClick={onClick}
-      className="border p-2  text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:opacity-90 transition-all duration-200"
-      style={{ backgroundColor: "#228b22" }}
+      disabled={disabled || isLoading}
+      size={size}
+      className={`${
+        fullWidth ? "w-full" : ""
+      } flex items-center justify-center`}
+      aria-label="Add to cart"
     >
-      Add to Cart
-    </button>
+      {isLoading ? (
+        <Loader2 className="h-5 w-5 animate-spin" />
+      ) : (
+        <>
+          <ShoppingCart className="mr-2 h-5 w-5" />
+          Add to Cart
+        </>
+      )}
+    </Button>
   );
 };
 
