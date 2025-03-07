@@ -45,7 +45,7 @@ export type CartItem = {
 export type LocalUser = {
   id: number;
   username: string;
-  email: string;
+  emailAddress: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;

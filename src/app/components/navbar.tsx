@@ -5,8 +5,13 @@ import { Input } from "@/components/ui/input";
 import { ShoppingCart, UserRound, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "../context/auth_context";
+import { useCart } from "../context/cart_context";
 
 export function Navbar() {
+  const { isAuthenticated, checkAuth, logout } = useAuth();
+  const { cart } = useCart();
+
   return (
     <div className="border-b">
       {/* top bar */}
@@ -46,12 +51,24 @@ export function Navbar() {
 
           {/* Account and Cart buttons */}
           <div className="flex items-center space-x-4">
-            <Link href="/login">
-              <Button variant="outline" className="flex items-center">
-                <UserRound className="w-5 h-5 mr-2" />
-                Account
-              </Button>
-            </Link>
+            <div>
+              {isAuthenticated ? (
+                <Link href="/dashboard">
+                  <Button variant="outline" className="flex items-center">
+                    <UserRound className="w-5 h-5 mr-2" />
+                    Account
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button variant="outline" className="flex items-center">
+                    <UserRound className="w-5 h-5 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </div>
+
 
             <Link href="/cart">
               <Button

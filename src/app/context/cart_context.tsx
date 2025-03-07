@@ -29,10 +29,16 @@ export function CartContextProvider({
         credentials: "include",
       });
 
+      if (response.status === 401) {
+        setCart(null);
+        return;
+      }
+
       const data = await response.json();
       setCart(data);
     } catch (error) {
       console.error("Error fetching cart", error);
+      setCart(null);
     }
   }
 
@@ -46,6 +52,10 @@ export function CartContextProvider({
         credentials: "include",
         body: JSON.stringify({ sku, quantity }),
       });
+
+      if (response.status === 401) {
+        return;
+      }
 
       const data = await response.json();
       setCart(data);

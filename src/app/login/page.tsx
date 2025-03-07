@@ -107,17 +107,6 @@ const LoginPage = () => {
             </Button>
           </div>
         </div>
-
-        {/* debugging */}
-        <div>
-          {isAuthenticated ? (
-            <div>
-              <p className="text-green-500">You are logged in</p>
-            </div>
-          ) : (
-            <p className="text-red-500">You are not logged in</p>
-          )}
-        </div>
       </div>
     </div>
   );
