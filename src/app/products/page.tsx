@@ -16,6 +16,24 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 
+async function fetchPageInformation(category: string) {
+  const [priceRangeResponse, brandsResponse, countsResponse] = await Promise.all([
+    fetch(`http://localhost:8080/api/public/get/products/prices/${category}`),
+    fetch(`http://localhost:8080/api/public/get/products/brands/${category}`),
+    fetch(`http://localhost:8080/api/public/get/products/count/${category}`),
+  ]);
+
+  if (!priceRangeResponse.ok || !brandsResponse.ok || !countsResponse.ok) {
+    throw new Error("Failed to fetch page information");
+  }
+
+  const priceRange = await priceRangeResponse.json();
+  const brands = await brandsResponse.json();
+  const counts = await countsResponse.json();
+
+  return { priceRange, brands, counts };
+}
+
 async function fetchProducts(
   category: string,
   page: number,
@@ -53,8 +71,24 @@ const ProductsPage = () => {
   // Mock filter states
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [itemCount, setItemCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
+    async function loadPageInformation() {
+      try {
+        const { priceRange, brands, counts } = await fetchPageInformation(category);
+        console.log("Fetched page information:", { priceRange, brands, counts }); // Debug log
+        setPriceRange(priceRange);
+        setSelectedBrands(brands.brands);
+        setItemCount(counts.items);
+        setTotalPages(counts.pages);
+      } catch (error) {
+        console.error("Error fetching page information:", error);
+        setError("Failed to fetch page information");
+      }
+    }
+
     async function loadProducts() {
       try {
         const fetchedProducts = await fetchProducts(category, page, pageSize);
@@ -65,8 +99,10 @@ const ProductsPage = () => {
         setError("Failed to fetch products");
       }
     }
+
+    loadPageInformation();
     loadProducts();
-  }, [category, page, pageSize]); // Added page and pageSize as dependencies
+  }, [category, page, pageSize]);
 
   const renderHeading = () => {
     switch (category) {
@@ -80,21 +116,6 @@ const ProductsPage = () => {
         return "All Products";
     }
   };
-
-  // Mock total pages for pagination demo
-  const totalPages = 5;
-
-  // Mock brands for filter demo
-  const availableBrands = [
-    "ASUS",
-    "MSI",
-    "Gigabyte",
-    "NVIDIA",
-    "AMD",
-    "Intel",
-    "Corsair",
-    "Logitech",
-  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -134,9 +155,8 @@ const ProductsPage = () => {
       <div className="flex flex-col md:flex-row gap-6">
         {/* Filters Sidebar */}
         <aside
-          className={`md:w-64 flex-shrink-0 ${
-            isFiltersOpen ? "block" : "hidden md:block"
-          }`}
+          className={`md:w-64 flex-shrink-0 ${isFiltersOpen ? "block" : "hidden md:block"
+            }`}
         >
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <div className="flex justify-between items-center mb-4">
@@ -204,7 +224,7 @@ const ProductsPage = () => {
             <div className="mb-6">
               <h3 className="font-medium mb-3">Brands</h3>
               <div className="space-y-2 max-h-48 overflow-y-auto">
-                {availableBrands.map((brand) => (
+                {selectedBrands.map((brand) => (
                   <div key={brand} className="flex items-center">
                     <input
                       type="checkbox"

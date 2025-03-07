@@ -72,8 +72,8 @@ const ProductPage = () => {
     product && product.productImages && product.productImages.length > 0
       ? product.productImages
       : product?.mainImage
-      ? [product.mainImage]
-      : [];
+        ? [product.mainImage]
+        : [];
 
   // Function to render stock status
   const renderStockStatus = () => {
@@ -208,11 +208,10 @@ const ProductPage = () => {
               {galleryImages.map((image, index) => (
                 <button
                   key={index}
-                  className={`aspect-square relative bg-white rounded border ${
-                    selectedImageIndex === index
+                  className={`aspect-square relative bg-white rounded border ${selectedImageIndex === index
                       ? "border-blue-500 ring-2 ring-blue-200"
                       : "border-gray-200 hover:border-gray-300"
-                  } overflow-hidden`}
+                    } overflow-hidden`}
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <Image
@@ -377,21 +376,19 @@ const ProductPage = () => {
           <div className="border-b border-gray-200 mb-6">
             <div className="flex space-x-6">
               <button
-                className={`py-2 text-sm font-medium border-b-2 ${
-                  activeTab === "description"
+                className={`py-2 text-sm font-medium border-b-2 ${activeTab === "description"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
                 onClick={() => setActiveTab("description")}
               >
                 Description
               </button>
               <button
-                className={`py-2 text-sm font-medium border-b-2 ${
-                  activeTab === "specifications"
+                className={`py-2 text-sm font-medium border-b-2 ${activeTab === "specifications"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
                 onClick={() => setActiveTab("specifications")}
               >
                 Specifications

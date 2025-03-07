@@ -4,7 +4,6 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -17,29 +16,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { formatCurrency } from "../utility/formatCurrency";
+import { useCart } from "../context/cart_context";
 
-// Dummy cart data
-const dummyCart = {
-  items: [
-    {
-      id: "1",
-      name: "Sample Product 1",
-      sku: "SKU001",
-      price: 99.99,
-      quantity: 1,
-      imageUrl: "/placeholder.jpg",
-    },
-    {
-      id: "2",
-      name: "Sample Product 2",
-      sku: "SKU002",
-      price: 149.99,
-      quantity: 2,
-      imageUrl: "/placeholder.jpg",
-    },
-  ],
-  cartSubTotal: 399.97,
-};
+async function getStripe() {
+  try {
+    const response = await fetch("http://localhost:8080/api/user/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Error getting Stripe");
+    }
+
+    const data: { stripeUrl: string } = await response.json();
+    return data.stripeUrl;
+
+  } catch (error) {
+    console.error("Error getting Stripe", error);
+  }
+}
 
 // Define form validation schema
 const checkoutFormSchema = z.object({
@@ -58,6 +57,7 @@ type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
 
 const CheckoutPage: React.FC = () => {
   const router = useRouter();
+  const { cart, setCart } = useCart();
 
   // Set up form with zod validation
   const form = useForm<CheckoutFormValues>({
@@ -67,29 +67,30 @@ const CheckoutPage: React.FC = () => {
       name: "",
       address: "",
       city: "",
-      state: "",
-      zipCode: "",
-      cardNumber: "",
-      expiryDate: "",
-      cvv: "",
+      state: ""
     },
   });
 
-  async function onSubmit(values: CheckoutFormValues) {
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    router.push("/order-confirmation");
+  async function getStripeCheckout(values: CheckoutFormValues) {
+    const stripeUrl = await getStripe();
+    if (!stripeUrl) {
+      return;
+    }
+    window.location.href = stripeUrl;
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return null;
   }
 
   return (
     <div className="container mx-auto py-12 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Checkout</h1>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Order Summary */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-          {dummyCart.items.map((item) => (
+          {cart.items.map((item) => (
             <div key={item.id} className="flex justify-between mb-2">
               <span>
                 {item.name} x {item.quantity}
@@ -100,7 +101,7 @@ const CheckoutPage: React.FC = () => {
           <div className="border-t border-gray-200 pt-4 mt-4">
             <div className="flex justify-between mb-2">
               <span className="font-medium">Subtotal</span>
-              <span>{formatCurrency(dummyCart.cartSubTotal)}</span>
+              <span>{formatCurrency(cart?.cartSubTotal)}</span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="font-medium">Shipping</span>
@@ -108,7 +109,7 @@ const CheckoutPage: React.FC = () => {
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Total</span>
-              <span>{formatCurrency(dummyCart.cartSubTotal)}</span>
+              <span>{formatCurrency(cart.cartSubTotal)}</span>
             </div>
           </div>
         </div>
@@ -116,8 +117,9 @@ const CheckoutPage: React.FC = () => {
         {/* Checkout Form */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
+
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(getStripeCheckout)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -251,11 +253,12 @@ const CheckoutPage: React.FC = () => {
               <Button type="submit" className="w-full">
                 Place Order
               </Button>
+
             </form>
           </Form>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -6,6 +6,7 @@ import { Cart } from "../types";
 type CartContextType = {
   cart: Cart | null;
   setCart: (cart: Cart | null) => void;
+  updateCart: (sku: string, quantity: number) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -35,6 +36,25 @@ export function CartContextProvider({
     }
   }
 
+  async function updateCart(sku: string, quantity: number) {
+    try {
+      const response = await fetch("http://localhost:8080/api/user/cart/edit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ sku, quantity }),
+      });
+
+      const data = await response.json();
+      setCart(data);
+    } catch (error) {
+      console.error("Error updating cart", error);
+    }
+
+  }
+
   useEffect(() => {
     try {
       fetchCart();
@@ -45,7 +65,7 @@ export function CartContextProvider({
   }, []);
 
   return (
-    <CartContext.Provider value={{ cart, setCart }}>
+    <CartContext.Provider value={{ cart, setCart, updateCart }}>
       {children}
     </CartContext.Provider>
   );

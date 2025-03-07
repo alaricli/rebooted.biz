@@ -1,9 +1,12 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { LocalUser } from "../types";
+import { set } from "react-hook-form";
 
 type AuthContextType = {
   isAuthenticated: boolean;
+  userDetails: LocalUser | null;
   checkAuth: () => void;
   logout: () => void;
 };
@@ -16,6 +19,7 @@ export function AuthContextProvider({
   children: React.ReactNode;
 }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userDetails, setUserDetails] = useState<LocalUser | null>(null);
 
   async function checkAuth() {
     console.log("Checking auth");
@@ -32,6 +36,7 @@ export function AuthContextProvider({
       );
       if (response.ok) {
         setIsAuthenticated(true);
+        setUserDetails(await response.json());
       } else {
         setIsAuthenticated(false);
       }
@@ -48,6 +53,7 @@ export function AuthContextProvider({
         credentials: "include",
       });
       if (response.ok) {
+        setUserDetails(null);
         setIsAuthenticated(false);
       } else {
         console.error("Error logging out");
@@ -66,7 +72,7 @@ export function AuthContextProvider({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, checkAuth, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userDetails, checkAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

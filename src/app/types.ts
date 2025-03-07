@@ -50,3 +50,17 @@ export type LocalUser = {
   lastName: string;
   phoneNumber: string;
 };
+
+export type PriceRangeData = {
+  min: number;
+  max: number;
+};
+
+export type BrandsData = {
+  brands: string[];
+};
+
+export type CountsData = {
+  items: number;
+  pages: number;
+};
