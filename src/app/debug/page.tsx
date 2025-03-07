@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "../context/auth_context";
 
 export default function DebugPage() {
@@ -20,6 +21,25 @@ export default function DebugPage() {
     console.log(response);
     if (response.ok) {
       checkAuth(); // Update auth state after successful login
+    }
+  };
+
+  const fetchCart = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/user/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }); // Fetch the cart data
+      const cartData = await response.json();
+      if (!response.ok) {
+        throw new Error(cartData.message);
+      }
+      console.log("Fetched cart data:", cartData); // Log the fetched cart data
+    } catch (error) {
+      console.error("Error fetching cart", error);
     }
   };
 

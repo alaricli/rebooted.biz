@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,51 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Minus, Plus, ShoppingCart } from "lucide-react";
 import { formatCurrency } from "../utility/formatCurrency";
+import { useAuth } from "../context/auth_context";
+import { useCart } from "../context/cart_context";
 
-// Dummy cart data
-const dummyCart = {
-  items: [
-    {
-      id: "1",
-      name: "Sample Product 1",
-      sku: "SKU001",
-      price: 99.99,
-      quantity: 1,
-      imageUrl: "/placeholder.jpg",
-    },
-    {
-      id: "2",
-      name: "Sample Product 2",
-      sku: "SKU002",
-      price: 149.99,
-      quantity: 2,
-      imageUrl: "/placeholder.jpg",
-    },
-  ],
-  cartSubTotal: 399.97,
-};
 
-const CartPage: React.FC = () => {
+const CartPage = () => {
   const router = useRouter();
-  const [cart, setCart] = useState(dummyCart);
+  // const [cart, setCart] = useState<Cart | null>(null);
+
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated, checkAuth, logout } = useAuth();
+  const { cart, setCart } = useCart();
 
   const handleQuantityChange = (sku: string, newQuantity: number) => {
-    if (newQuantity < 0) return;
-
-    setCart((prevCart) => ({
-      ...prevCart,
-      items: prevCart.items.map((item) =>
-        item.sku === sku ? { ...item, quantity: newQuantity } : item
-      ),
-      cartSubTotal: prevCart.items.reduce(
-        (total, item) =>
-          total +
-          (item.sku === sku
-            ? item.price * newQuantity
-            : item.price * item.quantity),
-        0
-      ),
-    }));
+    return null;
   };
 
   if (!cart || cart.items.length === 0) {
