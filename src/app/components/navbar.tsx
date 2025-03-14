@@ -53,7 +53,7 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             <div>
               {isAuthenticated ? (
-                <Link href="/dashboard">
+                <Link href="/account">
                   <Button variant="outline" className="flex items-center">
                     <UserRound className="w-5 h-5 mr-2" />
                     Account

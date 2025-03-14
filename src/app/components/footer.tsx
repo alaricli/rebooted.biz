@@ -29,7 +29,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/products">
-                  <p className="hover:text-orange-400">PC Components</p>
+                  <p className="hover:text-orange-400">Components</p>
                 </Link>
               </li>
               <li>

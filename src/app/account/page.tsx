@@ -6,12 +6,55 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Order } from "../types";
+import { formatCurrency } from "../utility/formatCurrency";
 
-export default function DashboardPage() {
+
+export default function AccountPage() {
   const router = useRouter();
   const { isAuthenticated, userDetails, checkAuth, logout } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Function to fetch order history
+  const fetchOrderHistory = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/user/order-history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include credentials for authentication
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setOrders(data);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setError("Unable to load your order history. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch orders when the component mounts or when the orders tab is selected
+  useEffect(() => {
+    if (activeTab === "orders" && isAuthenticated) {
+      fetchOrderHistory();
+    }
+  }, [activeTab, isAuthenticated]);
 
   const getInitials = () => {
     if (!userDetails?.firstName) return "U";
@@ -36,7 +79,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Dashboard Content */}
-      <Tabs defaultValue="overview" className="space-y-4">
+      <Tabs
+        defaultValue="overview"
+        className="space-y-4"
+        onValueChange={(value) => setActiveTab(value)}
+      >
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -84,10 +131,82 @@ export default function DashboardPage() {
               <CardTitle>Order History</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-center text-muted-foreground py-4">
-                Your order history will appear here
-              </p>
-              {/* Add your order list here */}
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Loading your orders...</p>
+                </div>
+              ) : error ? (
+                <div className="text-center py-8">
+                  <p className="text-red-500">{error}</p>
+                  <Button
+                    variant="outline"
+                    onClick={fetchOrderHistory}
+                    className="mt-4"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              ) : orders.length === 0 ? (
+                <p className="text-center text-muted-foreground py-4">
+                  You haven't placed any orders yet
+                </p>
+              ) : (
+                <div className="space-y-6">
+                  {orders.map((order) => (
+                    <Card key={order.id} className="shadow-sm">
+                      <CardHeader className="bg-muted/50 pb-2">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-sm font-medium">Order #{order.id}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {order.created ? new Date(order.created).toLocaleDateString() : 'Date not available'}
+                            </p>
+                          </div>
+                          <span className={`px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium`}>
+                            {order.orderStatus}
+                          </span>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-4">
+                        {order.orderItems.map((item, index) => (
+                          <div key={index} className="flex items-start py-3 gap-4 border-b last:border-0">
+                            <div className="w-16 h-16 relative flex-shrink-0">
+                              <Image
+                                src={item.product.mainImage}
+                                alt={item.product.name}
+                                fill
+                                sizes="64px"
+                                className="object-contain"
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <div className="flex justify-between">
+                                <h4 className="font-medium">{item.product.name}</h4>
+                                <p className="font-semibold">
+                                  {formatCurrency(item.product.unitPrice * item.quantity)}
+                                </p>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {item.product.brand} · SKU: {item.product.sku}
+                              </p>
+                              <p className="text-sm">Qty: {item.quantity}</p>
+                            </div>
+                          </div>
+                        ))}
+                        <div className="flex justify-between mt-4">
+                          <p className="font-medium">Order Total</p>
+                          <p className="font-bold">
+                            {formatCurrency(order.orderItems.reduce(
+                              (total, item) => total + item.product.unitPrice * item.quantity,
+                              0
+                            ))}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -44,7 +44,7 @@ const LoginPage = () => {
         console.log("Login successful");
         await checkAuth();
         setTimeout(() => {
-          router.push("/dashboard");
+          router.push("/account");
         }, 100);
       } else {
         console.log("Login failed");

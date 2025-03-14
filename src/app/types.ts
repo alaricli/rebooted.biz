@@ -35,6 +35,7 @@ export type Cart = {
 
 export type CartItem = {
   id: number;
+  productId: number;
   sku: string;
   name: string;
   imageUrl: string;
@@ -49,6 +50,7 @@ export type LocalUser = {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  avatarUrl: string;
 };
 
 export type PriceRangeData = {
@@ -63,4 +65,18 @@ export type BrandsData = {
 export type CountsData = {
   items: number;
   pages: number;
+};
+
+export type Order = {
+  id: number;
+  orderItems: OrderItem[];
+  stripeSessionId: string;
+  orderStatus: string;
+  created: string;
+};
+
+export type OrderItem = {
+  product: Product;
+  unitPrice: number;
+  quantity: number;
 };
